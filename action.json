@@ -1,0 +1,27 @@
+{
+	"actions": [
+      {
+        "description": "Default Welcome Intent",
+        "name": "MAIN",
+        "fulfillment": {
+          "conversationName": "actions"
+        },
+        "intent": {
+          "name": "actions.intent.MAIN",
+          "trigger": {
+            "queryPatterns": [
+              "talk to actions"
+            ]
+          }
+        }
+      }
+    ],
+    "conversations": {
+      "actions": {
+        "name": "actions",
+        "url": "https://afternoon-atoll-54187.herokuapp.com/",
+        "fulfillmentApiVersion": 2
+      }
+    }
+
+}

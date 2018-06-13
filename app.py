@@ -77,7 +77,7 @@ def reply(queue,c_id,req_body):
     with app.app_context():
         resp = get_response(req_body)
         print(req_body['inputs'][0]['rawInputs'][0]['inputType'])
-        responseData = requests.post('https://c8314b6d.ngrok.io/test_reply',data=resp,headers={'User-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36'},verify=False)
+        responseData = requests.post('https://afternoon-atoll-54187.herokuapp.com/test_reply',data=resp,headers={'User-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36'},verify=False)
         response = responseData.json()
         print(response)
         speech=response['speech']
