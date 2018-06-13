@@ -2,7 +2,6 @@ from flask import Flask
 from flask import make_response
 from flask import request
 # from flask_cors import CORS,cross_origin
-from mysql import MySql
 from random import randint
 from multiprocessing import Queue
 import json
