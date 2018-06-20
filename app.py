@@ -19,13 +19,13 @@ replies={}
 
 textTmp = '{"conversationToken":"{\\"state\\":null,\\"data\\":{}}","expectUserResponse":true,"expectedInputs":[{"inputPrompt":{"richInitialPrompt":{"items":[{"simpleResponse":{"ssml":"<speak>%s</speak>","displayText":"%s"}}],"suggestions":[]}},"possibleIntents":[{"intent":"actions.intent.TEXT"}]}]}'
 
-cardTmp = '{"conversationToken":"","expectUserResponse":true,"expectedInputs":[{"inputPrompt":{"richInitialPrompt":{"items":[{"simpleResponse":{"textToSpeech":"Math and prime numbers it is!","displayText":"Displayed Card"}},{"basicCard":{"title":"Math & prime numbers","formattedText":"42 is an even composite number.It\n is composed of three distinct prime numbers multiplied together. It\n has a total of eight divisors. 42 is an abundant number, because the\n sum of its proper divisors 54 is greater than it self. To count from\n 1 to 42 would take you about twenty-one…","image":{"url":"https://www.telkomsel.com/sites/default/files/upload/Virtual%20Asset%20Personalised%20Menu%20-%20Greeting%20rev01-02.jpg","accessibilityText":"Imagealternatetext"},"buttons":[{"title":"Readmore","openUrlAction":{"url":"https://upload.wikimedia.org/wikipedia/commons/d/dd/Minnesota_Twins_42.png"}}],"imageDisplayOptions":"CROPPED"}}],"suggestions":[]}},"possibleIntents":[{"intent":"actions.intent.TEXT"}]}]}'
+cardTmp = '{"conversationToken":"","expectUserResponse":true,"expectedInputs":[{"inputPrompt":{"richInitialPrompt":{"items":[{"simpleResponse":{"textToSpeech":"This is an example of card in google action","displayText":"This is an example of card in google action"}},{"basicCard":{"title":"I am Veronika Assistant","formattedText":" Aku Veronika, asisten virtual untuk membantu kebutuhan Telkomsel Kamu mulai dari bayar tagihan, isi pulsa hingga tukar POIN!","image":{"url":"https://www.telkomsel.com/sites/default/files/upload/Virtual%20Asset%20Personalised%20Menu%20-%20Greeting%20rev01-02.jpg","accessibilityText":"Imagealternatetext"},"imageDisplayOptions":"CROPPED"}}],"suggestions":[]}},"possibleIntents":[{"intent":"actions.intent.TEXT"}]}]}'
 
 helloTmp = '{"conversationToken":"","expectUserResponse":true,"expectedInputs":[{"inputPrompt":{"richInitialPrompt":{"items":[{"simpleResponse":{"textToSpeech":"Hello, you can call me Veronika","displayText":"Hello, you can call me Veronika"}},{"basicCard":{"title":"I am Veronika Assistant","formattedText":" Aku Veronika, asisten virtual untuk membantu kebutuhan Telkomsel Kamu mulai dari bayar tagihan, isi pulsa hingga tukar POIN!","image":{"url":"https://www.telkomsel.com/sites/default/files/upload/Virtual%20Asset%20Personalised%20Menu%20-%20Greeting%20rev01-02.jpg","accessibilityText":"Imagealternatetext"},"imageDisplayOptions":"CROPPED"}}],"suggestions":[]}},"possibleIntents":[{"intent":"actions.intent.TEXT"}]}]}'
 
 caroTmp = '{"conversationToken":"","expectUserResponse":true,"expectedInputs":[{"inputPrompt":{"initialPrompts":[{"textToSpeech":"%s"}],"noInputPrompts":[]},"possibleIntents":[{"intent":"actions.intent.OPTION","inputValueData":{"@type":"type.googleapis.com/google.actions.v2.OptionValueSpec","carouselSelect":{"items":[{"optionInfo":{"key":"%s","synonyms":["%s"]},"title":"%s","description":"%s","image":{"url":"%s","accessibilityText":"%s"}},{"optionInfo":{"key":"%s","synonyms":["%s"]},"title":"%s","description":"%s","image":{"url":"%s","accessibilityText":"%s"}}]}}}]}]}'
 
-permissionTmp = '{"conversationToken":"{\\"state\\":null,\\"data\\":{}}","expectUserResponse":true,"expectedInputs":[{"inputPrompt":{"richInitialPrompt":{"items":[{"simpleResponse":{"textToSpeech":"To know you more","displayText":"To know you more"}}],"suggestions":[]},"noInputPrompts":[]},"possibleIntents":[{"intent":"actions.intent.PERMISSION","inputValueData":{"@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec","optContext":"To know you more","permissions":["NAME"]}}]}]}'
+permissionTmp = '{"conversationToken":"{\\"state\\":null,\\"data\\":{}}","expectUserResponse":true,"expectedInputs":[{"inputPrompt":{"richInitialPrompt":{"items":[{"simpleResponse":{"textToSpeech":"To know you more","displayText":"Before we started,"}}],"suggestions":[]},"noInputPrompts":[]},"possibleIntents":[{"intent":"actions.intent.PERMISSION","inputValueData":{"@type":"type.googleapis.com/google.actions.v2.PermissionValueSpec","optContext":"To know you more","permissions":["NAME"]}}]}]}'
 
 @app.route('/',methods=['POST'])
 def hello():
@@ -33,12 +33,14 @@ def hello():
     conversation_id+=1
     req_body=json.loads(request.data)
     if req_body['inputs'][0]['intent']=='actions.intent.MAIN':
-        res=make_response(helloTmp)
+        res=make_response(permissionTmp)
     elif req_body['inputs'][0]['intent']=='actions.intent.OPTION' or req_body['inputs'][0]['intent']=='actions.intent.TEXT' or req_body['inputs'][0]['intent']=='actions.intent.PERMISSION':
         if req_body['inputs'][0]['rawInputs'][0]['query']=='bye':
             res=make_response('{"expectUserResponse":false,"finalResponse":{"speechResponse":{"textToSpeech":"See you again soon. Goodbye!"}}}')
-        elif req_body['inputs'][0]['rawInputs'][0]['query']=='yes':
+        elif req_body['inputs'][0]['arguments'][0]['textValue']=='true':
             res=make_response(textTmp %('Thank you', 'Thank you'))
+        elif req_body['inputs'][0]['arguments'][0]['textValue']=='false':
+            res=make_response('{"expectUserResponse":false,"finalResponse":{"speechResponse":{"textToSpeech":"Sorry then."}}}')
         else:
             is_killed=False
             log_file=open('log.txt','a+')
@@ -135,7 +137,7 @@ def test_reply():
             'speech':'Post API success with card',
             'speech_type':'card'
         }
-    elif 'caro' in reqData:
+    elif 'carousel' in reqData:
         response={
             'speech':'Post API success with caro',
             'speech_type':'caro',
