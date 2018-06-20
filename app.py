@@ -79,9 +79,9 @@ def hello():
 def reply(queue,c_id,req_body):
     with app.app_context():
         resp = get_response(req_body)
-        print(req_body['inputs'][0]['rawInputs'][0]['inputType'])
+        print(resp['inputs'][0]['rawInputs'][0]['inputType'])
         sentData = json.dumps(resp)
-        responseData = requests.post('https://85748297.ngrok.io/test_reply',data=sendData,headers={'User-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36'},verify=False)
+        responseData = requests.post('https://85748297.ngrok.io/test_reply',data=sentData,headers={'User-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36'},verify=False)
         response = responseData.json()
         print(response)
         speech=response['speech']
