@@ -34,13 +34,14 @@ def hello():
     req_body=json.loads(request.data)
     if req_body['inputs'][0]['intent']=='actions.intent.MAIN':
         res=make_response(permissionTmp)
-    elif req_body['inputs'][0]['intent']=='actions.intent.OPTION' or req_body['inputs'][0]['intent']=='actions.intent.TEXT' or req_body['inputs'][0]['intent']=='actions.intent.PERMISSION':
-        if req_body['inputs'][0]['rawInputs'][0]['query']=='bye':
-            res=make_response('{"expectUserResponse":false,"finalResponse":{"speechResponse":{"textToSpeech":"See you again soon. Goodbye!"}}}')
-        elif req_body['inputs'][0]['arguments'][0]['textValue']=='true':
+    elif req_body['inputs'][0]['intent']=='actions.intent.PERMISSION':
+        if req_body['inputs'][0]['arguments'][0]['textValue']=='true':
             res=make_response(textTmp %('Thank you', 'Thank you'))
         elif req_body['inputs'][0]['arguments'][0]['textValue']=='false':
             res=make_response('{"expectUserResponse":false,"finalResponse":{"speechResponse":{"textToSpeech":"Sorry then."}}}')
+    elif req_body['inputs'][0]['intent']=='actions.intent.OPTION' or req_body['inputs'][0]['intent']=='actions.intent.TEXT':
+        if req_body['inputs'][0]['rawInputs'][0]['query']=='bye':
+            res=make_response('{"expectUserResponse":false,"finalResponse":{"speechResponse":{"textToSpeech":"See you again soon. Goodbye!"}}}')
         else:
             is_killed=False
             log_file=open('log.txt','a+')
@@ -79,7 +80,8 @@ def reply(queue,c_id,req_body):
     with app.app_context():
         resp = get_response(req_body)
         print(req_body['inputs'][0]['rawInputs'][0]['inputType'])
-        responseData = requests.post('https://afternoon-atoll-54187.herokuapp.com/test_reply',data=resp,headers={'User-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36'},verify=False)
+        sentData = json.dumps(resp)
+        responseData = requests.post('https://85748297.ngrok.io/test_reply',data=sendData,headers={'User-agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.89 Safari/537.36'},verify=False)
         response = responseData.json()
         print(response)
         speech=response['speech']
@@ -110,10 +112,10 @@ def reply(queue,c_id,req_body):
 def get_response(req_body):
     if any(char.isdigit() for char in req_body['inputs'][0]['rawInputs'][0]['query']):
         print("number found")
-        return  req_body['inputs'][0]['rawInputs'][0]['query']
+        return  req_body
     else:
         print("number not found")
-        return  req_body['inputs'][0]['rawInputs'][0]['query']
+        return  req_body
     """
     if not req_body['inputs'][0]['rawInputs'][0]['query'].isdigit():
         print("no number found")
@@ -125,25 +127,25 @@ def get_response(req_body):
 
 @app.route('/test_reply',methods=['POST'])
 def test_reply():
-    reqData=request.data.decode("utf-8")
+    reqData=json.loads(request.data)
     print(reqData)
-    if 'halo' in reqData:
+    if 'halo' in reqData['inputs'][0]['rawInputs'][0]['query']:
         response={
             'speech':'Post API success with halo',
             'speech_type':'text'
         }
-    elif 'card' in reqData:
+    elif 'card' in reqData['inputs'][0]['rawInputs'][0]['query']:
         response={
             'speech':'Post API success with card',
             'speech_type':'card'
         }
-    elif 'carousel' in reqData:
+    elif 'carousel' in reqData['inputs'][0]['rawInputs'][0]['query']:
         response={
             'speech':'Post API success with caro',
             'speech_type':'caro',
             'options':[{'description':'Alaska','key':'0','synonyms':["alaska"],'title':'Alaska','url':'http://worldjourneys.co.nz/upload-images/World-Journeys-Historic-Alaska-and-Yukon-Milepost--0-4752-thumb.jpg'},{'description':'California','key':'1','synonyms':["california"],'title':'California','url':'http://www.princess.com/images/learn/destinations/california_coastals/pacific_coastals_150x100.jpg'}]
         }
-    elif 'permit' in reqData:
+    elif 'permit' in reqData['inputs'][0]['rawInputs'][0]['query']:
         response={
             'speech':'Post API success with permit',
             'speech_type':'permit'
